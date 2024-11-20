@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 eventCount.textContent = `Remaining Events: ${remainingEvents}`;
 
                 // Redirect if total number of events is 3 or more
-                if (eventTotal >= 66) {
-                    alert('You have 3 or more events! Redirecting to another page...');
+                if (eventTotal == 66) {
+                    alert('You have 66 events! Redirecting to another page...');
                     window.location.href = 'congratulations.html';
                 }
             });
