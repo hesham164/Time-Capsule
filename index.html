@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Capsule</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAecoiGbW97TIl29mD3f7Zr5PQSTytAQ3k",
+            authDomain: "quize-42032.firebaseapp.com",
+            databaseURL: "https://quize-42032-default-rtdb.firebaseio.com/",
+            projectId: "quize-42032",
+            storageBucket: "quize-42032.appspot.com",
+            messagingSenderId: "402409084375",
+            appId: "1:402409084375:web:e564518e118e786e10a792",
+            measurementId: "G-XDC229BN4W"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        window.auth = auth;
+        window.onAuthStateChanged = onAuthStateChanged;
+        window.signOut = signOut;
+        window.db = database;
+        window.ref = ref;
+        window.push = push;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Time Capsule</h1>
+        <form id="event-form">
+            <label for="event-date">Event Date:</label>
+            <input type="date" id="event-date" required>
+            <label for="event-desc">Event Description:</label>
+            <input type="text" id="event-desc" required>
+            <button type="submit">Add Event</button>
+        </form>
+        <a href="view_events.html">View Events</a>
+        <button id="logout-btn">Logout</button>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
