@@ -10,7 +10,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+        import { getDatabase, ref, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAecoiGbW97TIl29mD3f7Zr5PQSTytAQ3k",
@@ -26,11 +26,16 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
+
+        // Expose Firebase functionality to the global scope
         window.auth = auth;
         window.onAuthStateChanged = onAuthStateChanged;
         window.db = database;
         window.ref = ref;
         window.onValue = onValue;
+        window.update = update;
+        window.remove = remove;
+        window.get = get; // Added to support fetching event data
     </script>
 </head>
 <body>
