@@ -241,15 +241,18 @@ button.delete-btn {
         opacity: 1;
     }
 
-
-/* Media Query for Mobile Devices */ @media (max-width: 768px) { /* Ensure the same styling for mobile */
-
+/* Media Query for Mobile Devices */
+@media (max-width: 768px) {
     .container {
         background: #ffffff;
     }
 
-    h1, form label, .event-date, #event-count {
+    h1, form label, #event-count {
         color: #00796b;
+    }
+
+    .event-date {
+        color: #000; /* Black text for event dates */
     }
 
     #event-list li {
