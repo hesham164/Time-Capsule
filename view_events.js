@@ -21,16 +21,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Sort events by date
                 events.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-                // Display events and event count
+                // Display event buttons
                 eventList.innerHTML = '';
                 events.forEach(event => {
                     const listItem = document.createElement('li');
-                    listItem.innerHTML = `
-                        <span class="event-date">${event.date}</span>
-                        <p class="event-desc">${event.description}</p>
-                        <button class="edit-btn" data-id="${event.id}">Edit</button>
-                        <button class="delete-btn" data-id="${event.id}">Delete</button>
-                    `;
+                    const button = document.createElement('button');
+                    button.className = 'event-button';
+                    button.dataset.id = event.id;
+                    button.textContent = `Event on ${event.date}`;
+                    button.addEventListener('click', () => toggleEventDetails(event.id, event));
+                    listItem.appendChild(button);
                     eventList.appendChild(listItem);
                 });
 
@@ -45,20 +45,44 @@ document.addEventListener('DOMContentLoaded', function () {
                         window.location.href = 'congratulations.html';
                     }, 2000); // Give the user some time to see the notification
                 }
-
-                // Add event listeners for edit and delete buttons
-                document.querySelectorAll('.edit-btn').forEach(button => {
-                    button.addEventListener('click', handleEditEvent);
-                });
-                document.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', handleDeleteEvent);
-                });
             });
         } else {
             alert('You need to log in to view events.');
             window.location.href = 'login.html';
         }
     });
+
+    function toggleEventDetails(eventId, event) {
+        const buttons = document.querySelectorAll('.event-button');
+        buttons.forEach(button => {
+            if (button.dataset.id === eventId) {
+                button.classList.toggle('expanded');
+                if (button.classList.contains('expanded')) {
+                    const imagesHTML = displayMedia(event.images, 'image', event.id);
+                    const videosHTML = displayMedia(event.videos, 'video', event.id);
+                    button.innerHTML = `
+                        <h3>Event on ${event.date}</h3>
+                        <p>${event.description}</p>
+                        ${imagesHTML}
+                        ${videosHTML}
+                        <button class="edit-btn" data-id="${event.id}">Edit</button>
+                        <button class="delete-btn" data-id="${event.id}">Delete</button>
+                        <button class="collapse-btn">Collapse</button>
+                    `;
+                    button.querySelector('.collapse-btn').addEventListener('click', () => toggleEventDetails(event.id, event));
+                    button.querySelector('.edit-btn').addEventListener('click', handleEditEvent);
+                    button.querySelector('.delete-btn').addEventListener('click', handleDeleteEvent);
+                    button.querySelectorAll('.delete-image-btn').forEach(deleteButton => deleteButton.addEventListener('click', handleDeleteImage));
+                    button.querySelectorAll('.delete-video-btn').forEach(deleteButton => deleteButton.addEventListener('click', handleDeleteVideo));
+                } else {
+                    button.textContent = `Event on ${event.date}`;
+                }
+            } else {
+                button.classList.remove('expanded');
+                button.textContent = `Event on ${button.textContent.split(' on ')[1]}`;
+            }
+        });
+    }
 
     async function handleEditEvent(e) {
         const eventId = e.target.dataset.id;
@@ -72,6 +96,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             const currentEvent = snapshot.val();
+            currentEvent.images = currentEvent.images || [];
+            currentEvent.videos = currentEvent.videos || [];
 
             // Create a form for editing event
             const modal = document.createElement('div');
@@ -86,6 +112,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         <label for="event-desc">Description:</label>
                         <textarea id="event-desc" rows="3" required>${currentEvent.description}</textarea>
                         
+                        <label for="event-images">Add Images:</label>
+                        <input type="file" id="event-images" accept="image/*" multiple>
+                        
+                        <label for="event-videos">Add Videos:</label>
+                        <input type="file" id="event-videos" accept="video/*" multiple>
+
                         <button type="submit">Save</button>
                         <button type="button" id="cancel-btn">Cancel</button>
                     </form>
@@ -99,10 +131,31 @@ document.addEventListener('DOMContentLoaded', function () {
                 ev.preventDefault();
                 const eventDate = document.getElementById('event-date').value;
                 const eventDesc = document.getElementById('event-desc').value;
+                const imageFiles = document.getElementById('event-images').files;
+                const videoFiles = document.getElementById('event-videos').files;
+
+                const newImages = [];
+                const newVideos = [];
+
+                for (let i = 0; i < imageFiles.length; i++) {
+                    const base64Image = await fileToBase64(imageFiles[i]);
+                    newImages.push(base64Image);
+                }
+
+                for (let i = 0; i < videoFiles.length; i++) {
+                    const base64Video = await fileToBase64(videoFiles[i]);
+                    newVideos.push(base64Video);
+                }
 
                 if (eventDate && eventDesc) {
                     try {
-                        await window.update(eventRef, { date: eventDate, description: eventDesc });
+                        const updatedEvent = {
+                            date: eventDate,
+                            description: eventDesc,
+                            images: currentEvent.images.concat(newImages),
+                            videos: currentEvent.videos.concat(newVideos),
+                        };
+                        await window.update(eventRef, updatedEvent);
                         alert('Event updated successfully!');
                         modal.remove();
                     } catch (error) {
@@ -129,4 +182,86 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Error deleting event: ' + error.message);
         }
     }
+
+    async function handleDeleteVideo(e) {
+        const eventId = e.target.dataset.eventId;
+        const videoIndex = e.target.dataset.index;
+        const eventRef = window.ref(window.db, 'events/' + window.auth.currentUser.uid + '/' + eventId);
+
+        try {
+            // Fetch current event data
+            const snapshot = await window.get(eventRef);
+            if (!snapshot.exists()) {
+                alert('Event not found!');
+                return;
+            }
+            const currentEvent = snapshot.val();
+
+            // Remove video from event
+            currentEvent.videos.splice(videoIndex, 1);
+
+            // Update event in database
+            await window.update(eventRef, { videos: currentEvent.videos });
+            alert('Video deleted successfully!');
+        } catch (error) {
+            alert('Error deleting video: ' + error.message);
+        }
+    }
+
+    async function handleDeleteImage(e) {
+        const eventId = e.target.dataset.eventId;
+        const imageIndex = e.target.dataset.index;
+        const eventRef = window.ref(window.db, 'events/' + window.auth.currentUser.uid + '/' + eventId);
+
+        try {
+            // Fetch current event data
+            const snapshot = await window.get(eventRef);
+            if (!snapshot.exists()) {
+                alert('Event not found!');
+                return;
+            }
+            const currentEvent = snapshot.val();
+
+            // Remove image from event
+            currentEvent.images.splice(imageIndex, 1);
+
+            // Update event in database
+            await window.update(eventRef, { images: currentEvent.images });
+            alert('Image deleted successfully!');
+        } catch (error) {
+            alert('Error deleting image: ' + error.message);
+        }
+    }
+
+    function displayMedia(mediaArray, type, eventId = null) {
+    if (!mediaArray || mediaArray.length === 0) return '';
+    return mediaArray.map((media, index) => {
+        if (type === 'image') {
+            return `
+                <div class="media-thumb">
+                    <img src="${media}" alt="Event Image" />
+                    <a href="${media}" download>Download</a>
+                    ${eventId ? `<button class="delete-image-btn" data-event-id="${eventId}" data-index="${index}">Delete Image</button>` : ''}
+                </div>`;
+        } else if (type === 'video') {
+            return `
+                <div class="media-thumb">
+                    <video controls><source src="${media}" type="video/mp4" /></video>
+                    <a href="${media}" download>Download</a>
+                    ${eventId ? `<button class="delete-video-btn" data-event-id="${eventId}" data-index="${index}">Delete Video</button>` : ''}
+                </div>`;
+        }
+    }).join('');
+}
+
+// Function to convert file to Base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
+}
 });
+``

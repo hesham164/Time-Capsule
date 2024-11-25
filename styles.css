@@ -32,7 +32,8 @@ form label {
 
 input[type="text"],
 input[type="date"],
-textarea {
+textarea,
+input[type="file"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
@@ -55,9 +56,9 @@ button {
     transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #004d40;
-}
+    button:hover {
+        background-color: #004d40;
+    }
 
 a {
     color: #00796b;
@@ -68,9 +69,9 @@ a {
     transition: color 0.3s ease;
 }
 
-a:hover {
-    color: #004d40;
-}
+    a:hover {
+        color: #004d40;
+    }
 
 #event-list {
     list-style-type: none;
@@ -81,19 +82,19 @@ a:hover {
     margin-top: 20px;
 }
 
-#event-list li {
-    background: #e0f7fa;
-    padding: 15px;
-    border: 1px solid #b2dfdb;
-    border-radius: 5px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+    #event-list li {
+        background: #e0f7fa;
+        padding: 15px;
+        border: 1px solid #b2dfdb;
+        border-radius: 5px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-#event-list li:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
+        #event-list li:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
 
 .event-date {
     font-weight: bold;
@@ -127,20 +128,42 @@ button.edit-btn {
     color: white;
 }
 
-button.edit-btn:hover {
-    background-color: #45a049;
-    transform: translateY(-2px);
-}
+    button.edit-btn:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+    }
 
 button.delete-btn {
     background-color: #f44336; /* Red */
     color: white;
 }
 
-button.delete-btn:hover {
-    background-color: #d32f2f;
-    transform: translateY(-2px);
+    button.delete-btn:hover {
+        background-color: #d32f2f;
+        transform: translateY(-2px);
+    }
+
+.media-thumb {
+    margin-top: 10px;
 }
+
+    .media-thumb img,
+    .media-thumb video {
+        max-width: 100%;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    .media-thumb a {
+        display: block;
+        color: #00796b;
+        text-decoration: none;
+        margin-top: 5px;
+    }
+
+        .media-thumb a:hover {
+            color: #004d40;
+        }
 
 /* Modal Styling */
 .modal {
@@ -161,6 +184,7 @@ button.delete-btn:hover {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -180,6 +204,7 @@ button.delete-btn:hover {
     from {
         transform: translateY(-20px);
     }
+
     to {
         transform: translateY(0);
     }
@@ -203,15 +228,44 @@ button.delete-btn:hover {
     cursor: pointer;
 }
 
-.modal-content button[type="submit"] {
-    background: #007bff;
-    color: white;
+    .modal-content button[type="submit"] {
+        background: #007bff;
+        color: white;
+    }
+
+    .modal-content button#cancel-btn {
+        background: #ccc;
+    }
+
+    .modal-content button:hover {
+        opacity: 0.9;
+    }
+.event-button {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s;
 }
 
-.modal-content button#cancel-btn {
-    background: #ccc;
+    .event-button.expanded {
+        background: #fff;
+        border: 1px solid #ccc;
+        padding: 20px;
+    }
+
+.media-thumb {
+    margin-top: 10px;
 }
 
-.modal-content button:hover {
-    opacity: 0.9;
+.event-button h3,
+.event-button p,
+.event-button img,
+.event-button video,
+.event-button button {
+    margin-bottom: 10px;
 }
