@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const eventForm = document.getElementById('event-form');
     const logoutBtn = document.getElementById('logout-btn');
+    let savedPassword = sessionStorage.getItem('password'); // Retrieve the saved password from session storage
 
     // Ensure user is logged in
     window.auth.onAuthStateChanged((user) => {
@@ -20,10 +21,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         window.push(window.ref(window.db, 'events/' + userId), {
             date: eventDate,
-            description: eventDesc
+            description: eventDesc,
+            password: savedPassword // Save the password along with the event details
         }).then(() => {
             alert('Event added successfully!');
-            console.log('Event added:', { date: eventDate, description: eventDesc });
+           // console.log('Event added:', { date: eventDate, description: eventDesc, password: savedPassword });
         }).catch((error) => {
             console.error('Error adding event:', error);
             alert('Error adding event: ' + error.message);
