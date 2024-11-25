@@ -240,6 +240,7 @@ button.delete-btn {
     .modal-content button:hover {
         opacity: 0.9;
     }
+
 .event-button {
     display: block;
     margin: 10px 0;
@@ -268,4 +269,36 @@ button.delete-btn {
 .event-button video,
 .event-button button {
     margin-bottom: 10px;
+}
+
+/* Media Query for Mobile Devices */
+@media (max-width: 768px) {
+    .container {
+        background: #e0f7fa;
+    }
+
+    h1, form label, .event-date, #event-count {
+        color: #004d40;
+    }
+
+    #event-list li {
+        background: #ffffff;
+        border: 1px solid #b2dfdb;
+    }
+
+    button {
+        background-color: #004d40;
+    }
+
+        button:hover {
+            background-color: #00796b;
+        }
+
+    a {
+        color: #004d40;
+    }
+
+        a:hover {
+            color: #00796b;
+        }
 }
