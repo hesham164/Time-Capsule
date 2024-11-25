@@ -238,5 +238,38 @@ button.delete-btn {
     }
 
     .modal-content button:hover {
-        opacity: 0.9;
+        opacity: 1;
     }
+
+
+/* Media Query for Mobile Devices */ @media (max-width: 768px) { /* Ensure the same styling for mobile */
+
+    .container {
+        background: #ffffff;
+    }
+
+    h1, form label, .event-date, #event-count {
+        color: #00796b;
+    }
+
+    #event-list li {
+        background: #e0f7fa;
+        border: 1px solid #b2dfdb;
+    }
+
+    button {
+        background-color: #00796b; /* Green by default */
+    }
+
+        button:hover {
+            background-color: #004d40; /* Darker green on hover */
+        }
+
+    a {
+        color: #00796b;
+    }
+
+        a:hover {
+            color: #004d40;
+        }
+}
