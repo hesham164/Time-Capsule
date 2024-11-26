@@ -89,6 +89,7 @@ a {
         border-radius: 5px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
     }
 
         #event-list li:hover {
@@ -276,3 +277,41 @@ button.delete-btn {
             color: #004d40;
         }
 }
+.event-button {
+    position: relative;
+    transition: all 0.3s ease;
+    width: 100%;
+    overflow: hidden; /* Prevents content from spilling out */
+}
+
+    .event-button.expanded {
+        width: 100%;
+        height: auto;
+        white-space: normal; /* Allow text to wrap */
+        z-index: 1; /* Ensure it appears above other elements */
+        background-color: #004d40; /* Dark green background for the expanded event */
+        color: white; /* Ensure text is visible against the dark background */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Keep shadow for clarity */
+        border: 1px solid #b2dfdb; /* Maintain border consistency */
+        padding: 15px; /* Add padding to the expanded event */
+        margin-bottom: 20px; /* Add margin to separate from other buttons */
+        display: block; /* Ensure the expanded event is a block-level element */
+        position: absolute; /* Make the expanded event absolutely positioned */
+        top: 0; /* Align to the top of its container */
+        left: 0; /* Align to the left of its container */
+        right: 0; /* Align to the right of its container */
+        max-height: none; /* Ensure full height for content */
+        overflow: auto; /* Ensure content is scrollable */
+    }
+
+.hidden-container {
+    display: none; /* Hide the entire container */
+}
+
+.media-thumb img, .media-thumb video {
+    max-width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer; /* Indicate that the thumbnail is clickable */
+}
+

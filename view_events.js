@@ -51,38 +51,106 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = 'login.html';
         }
     });
+// Function to toggle event details
+function toggleEventDetails(eventId, event) {
+    const buttons = document.querySelectorAll('.event-button');
+    const parentLis = document.querySelectorAll('#event-list li');
 
-    function toggleEventDetails(eventId, event) {
-        const buttons = document.querySelectorAll('.event-button');
-        buttons.forEach(button => {
-            if (button.dataset.id === eventId) {
-                button.classList.toggle('expanded');
-                if (button.classList.contains('expanded')) {
-                    const imagesHTML = displayMedia(event.images, 'image', event.id);
-                    const videosHTML = displayMedia(event.videos, 'video', event.id);
-                    button.innerHTML = `
-                        <h3>Event on ${event.date}</h3>
-                        <p>${event.description}</p>
-                        ${imagesHTML}
-                        ${videosHTML}
-                        <button class="edit-btn" data-id="${event.id}">Edit</button>
-                        <button class="delete-btn" data-id="${event.id}">Delete</button>
-                        <button class="collapse-btn">Collapse</button>
-                    `;
-                    button.querySelector('.collapse-btn').addEventListener('click', () => toggleEventDetails(event.id, event));
-                    button.querySelector('.edit-btn').addEventListener('click', handleEditEvent);
-                    button.querySelector('.delete-btn').addEventListener('click', handleDeleteEvent);
-                    button.querySelectorAll('.delete-image-btn').forEach(deleteButton => deleteButton.addEventListener('click', handleDeleteImage));
-                    button.querySelectorAll('.delete-video-btn').forEach(deleteButton => deleteButton.addEventListener('click', handleDeleteVideo));
-                } else {
-                    button.textContent = `Event on ${event.date}`;
-                }
+    buttons.forEach(button => {
+        const parentLi = button.closest('li'); // Get the parent <li> element
+        let placeholder = parentLi.querySelector('.event-placeholder'); // Find or create placeholder
+
+        if (!placeholder) {
+            placeholder = document.createElement('div');
+            placeholder.className = 'event-placeholder';
+            parentLi.insertBefore(placeholder, button);
+        }
+
+        if (button.dataset.id === eventId) {
+            button.classList.toggle('expanded');
+            if (button.classList.contains('expanded')) {
+                const imagesHTML = displayMedia(event.images, 'image', event.id);
+                const videosHTML = displayMedia(event.videos, 'video', event.id);
+                button.innerHTML = `
+                    <h3>Event on ${event.date}</h3>
+                    <p>${event.description}</p>
+                    <div class="media-thumb">${imagesHTML}${videosHTML}</div>
+                    <button class="edit-btn" data-id="${event.id}">Edit</button>
+                    <button class="delete-btn" data-id="${event.id}">Delete</button>
+                    <button class="collapse-btn">Collapse</button>
+                `;
+
+                button.querySelector('.collapse-btn').addEventListener('click', () => toggleEventDetails(event.id, event));
+                button.querySelector('.edit-btn').addEventListener('click', handleEditEvent);
+                button.querySelector('.delete-btn').addEventListener('click', handleDeleteEvent);
+                button.querySelectorAll('.delete-image-btn').forEach(deleteButton => deleteButton.addEventListener('click', handleDeleteImage));
+                button.querySelectorAll('.delete-video-btn').forEach(deleteButton => deleteButton.addEventListener('click', handleDeleteVideo));
+
+                // Ensure the expanded event remains in its original position
+                parentLi.appendChild(button);
+                parentLi.classList.add('expanded');
+                placeholder.classList.add('expanded');
+                placeholder.style.height = `${button.scrollHeight}px`; // Set placeholder height to match expanded content
+
+                // Hide other events
+                parentLis.forEach(li => {
+                    if (li !== parentLi) {
+                        li.classList.add('hidden-container');
+                    }
+                });
+
+                button.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else {
-                button.classList.remove('expanded');
-                button.textContent = `Event on ${button.textContent.split(' on ')[1]}`;
+                button.textContent = `Event on ${event.date}`;
+                parentLi.classList.remove('expanded'); // Ensure expanded class is removed from parent <li>
+                placeholder.classList.remove('expanded');
+                placeholder.style.height = '0'; // Reset placeholder height
+
+                // Show other events
+                parentLis.forEach(li => {
+                    if (li !== parentLi) {
+                        li.classList.remove('hidden-container');
+                    }
+                });
             }
-        });
-    }
+        } else {
+            button.classList.remove('expanded');
+            button.textContent = `Event on ${button.textContent.split(' on ')[1]}`;
+            parentLi.classList.remove('expanded'); // Ensure expanded class is removed from non-clicked events
+
+            // Remove placeholder
+            placeholder.classList.remove('expanded');
+            placeholder.style.height = '0'; // Reset placeholder height
+        }
+    });
+}
+
+
+// Function to display media (images and videos)
+function displayMedia(mediaArray, type, eventId = null) {
+    if (!mediaArray || mediaArray.length === 0) return '';
+    return mediaArray.map((media, index) => {
+        if (type === 'image') {
+            return `
+                <div class="media-thumb">
+                    <img src="${media}" alt="Event Image" />
+                    <a href="${media}" download>Download</a>
+                    ${eventId ? `<button class="delete-image-btn" data-event-id="${eventId}" data-index="${index}">Delete Image</button>` : ''}
+                </div>`;
+        } else if (type === 'video') {
+            return `
+                <div class="media-thumb">
+                    <video controls><source src="${media}" type="video/mp4">Your browser does not support the video tag.</video>
+                    <a href="${media}" download>Download</a>
+                    ${eventId ? `<button class="delete-video-btn" data-event-id="${eventId}" data-index="${index}">Delete Video</button>` : ''}
+                </div>`;
+        }
+        return '';
+    }).join('');
+}
+
+
+
 
     async function handleEditEvent(e) {
         const eventId = e.target.dataset.id;
@@ -183,31 +251,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    async function handleDeleteVideo(e) {
-        const eventId = e.target.dataset.eventId;
-        const videoIndex = e.target.dataset.index;
-        const eventRef = window.ref(window.db, 'events/' + window.auth.currentUser.uid + '/' + eventId);
-
-        try {
-            // Fetch current event data
-            const snapshot = await window.get(eventRef);
-            if (!snapshot.exists()) {
-                alert('Event not found!');
-                return;
-            }
-            const currentEvent = snapshot.val();
-
-            // Remove video from event
-            currentEvent.videos.splice(videoIndex, 1);
-
-            // Update event in database
-            await window.update(eventRef, { videos: currentEvent.videos });
-            alert('Video deleted successfully!');
-        } catch (error) {
-            alert('Error deleting video: ' + error.message);
-        }
-    }
-
     async function handleDeleteImage(e) {
         const eventId = e.target.dataset.eventId;
         const imageIndex = e.target.dataset.index;
@@ -233,26 +276,33 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function displayMedia(mediaArray, type, eventId = null) {
-    if (!mediaArray || mediaArray.length === 0) return '';
-    return mediaArray.map((media, index) => {
-        if (type === 'image') {
-            return `
-                <div class="media-thumb">
-                    <img src="${media}" alt="Event Image" />
-                    <a href="${media}" download>Download</a>
-                    ${eventId ? `<button class="delete-image-btn" data-event-id="${eventId}" data-index="${index}">Delete Image</button>` : ''}
-                </div>`;
-        } else if (type === 'video') {
-            return `
-                <div class="media-thumb">
-                    <video controls><source src="${media}" type="video/mp4" /></video>
-                    <a href="${media}" download>Download</a>
-                    ${eventId ? `<button class="delete-video-btn" data-event-id="${eventId}" data-index="${index}">Delete Video</button>` : ''}
-                </div>`;
+    async function handleDeleteVideo(e) {
+    const eventId = e.target.dataset.eventId;
+    const videoIndex = e.target.dataset.index;
+    const eventRef = window.ref(window.db, 'events/' + window.auth.currentUser.uid + '/' + eventId);
+
+    try {
+        // Fetch current event data
+        const snapshot = await window.get(eventRef);
+        if (!snapshot.exists()) {
+            alert('Event not found!');
+            return;
         }
-    }).join('');
+        const currentEvent = snapshot.val();
+
+        // Remove video from event
+        currentEvent.videos.splice(videoIndex, 1);
+
+        // Update event in database
+        await window.update(eventRef, { videos: currentEvent.videos });
+        alert('Video deleted successfully!');
+    } catch (error) {
+        alert('Error deleting video: ' + error.message);
+    }
 }
+
+
+
 
 // Function to convert file to Base64
 function fileToBase64(file) {
