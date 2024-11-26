@@ -99,7 +99,14 @@ function toggleEventDetails(eventId, event) {
                     }
                 });
 
-                button.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Scroll to the expanded event, ensuring it grows downward
+                parentLi.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                // Additional logic to ensure the expanded event is fully visible
+                const rect = button.getBoundingClientRect();
+                if (rect.top < 0) {
+                    window.scrollBy({ top: rect.top - 20, behavior: 'smooth' });
+                }
             } else {
                 button.textContent = `Event on ${event.date}`;
                 parentLi.classList.remove('expanded'); // Ensure expanded class is removed from parent <li>
@@ -126,7 +133,6 @@ function toggleEventDetails(eventId, event) {
 }
 
 
-// Function to display media (images and videos)
 function displayMedia(mediaArray, type, eventId = null) {
     if (!mediaArray || mediaArray.length === 0) return '';
     return mediaArray.map((media, index) => {
@@ -149,6 +155,8 @@ function displayMedia(mediaArray, type, eventId = null) {
     }).join('');
 }
 
+
+ 
 
 
 

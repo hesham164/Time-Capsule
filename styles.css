@@ -281,33 +281,52 @@ button.delete-btn {
     position: relative;
     transition: all 0.3s ease;
     width: 100%;
-    overflow: hidden; /* Prevents content from spilling out */
+    overflow: hidden;
 }
 
     .event-button.expanded {
         width: 100%;
         height: auto;
-        white-space: normal; /* Allow text to wrap */
-        z-index: 1; /* Ensure it appears above other elements */
-        background-color: #004d40; /* Dark green background for the expanded event */
-        color: white; /* Ensure text is visible against the dark background */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Keep shadow for clarity */
-        border: 1px solid #b2dfdb; /* Maintain border consistency */
-        padding: 15px; /* Add padding to the expanded event */
-        margin-bottom: 20px; /* Add margin to separate from other buttons */
-        display: block; /* Ensure the expanded event is a block-level element */
-        position: relative; /* Ensure the expanded event grows downward */
-        max-height: none; /* Ensure full height for content */
-        overflow: auto; /* Ensure content is scrollable */
+        white-space: normal;
+        z-index: 1;
+        background-color: #004d40;
+        color: white;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        border: 1px solid #b2dfdb;
+        padding: 15px;
+        margin-bottom: 20px;
+        display: block;
+        position: relative;
+        max-height: none;
+        overflow: auto;
     }
 
 .hidden-container {
-    display: none; /* Hide the entire container */
+    display: none;
 }
 
-.media-thumb img, .media-thumb video {
+.media-thumb img,
+.media-thumb video {
     max-width: 100%;
+    max-height: 300px; /* Set a maximum height to prevent layout issues */
     border-radius: 5px;
     margin-bottom: 10px;
-    cursor: pointer; /* Indicate that the thumbnail is clickable */
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .event-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+        .event-button.expanded {
+            font-size: 16px;
+            padding: 12px;
+        }
+
+    .media-thumb img,
+    .media-thumb video {
+        max-width: 100%;
+    }
 }
