@@ -296,10 +296,7 @@ button.delete-btn {
         padding: 15px; /* Add padding to the expanded event */
         margin-bottom: 20px; /* Add margin to separate from other buttons */
         display: block; /* Ensure the expanded event is a block-level element */
-        position: absolute; /* Make the expanded event absolutely positioned */
-        top: 0; /* Align to the top of its container */
-        left: 0; /* Align to the left of its container */
-        right: 0; /* Align to the right of its container */
+        position: relative; /* Ensure the expanded event grows downward */
         max-height: none; /* Ensure full height for content */
         overflow: auto; /* Ensure content is scrollable */
     }
@@ -314,4 +311,3 @@ button.delete-btn {
     margin-bottom: 10px;
     cursor: pointer; /* Indicate that the thumbnail is clickable */
 }
-
