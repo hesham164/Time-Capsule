@@ -284,22 +284,22 @@ button.delete-btn {
     overflow: hidden;
 }
 
-    .event-button.expanded {
-        width: 100%;
-        height: auto;
-        white-space: normal;
-        z-index: 1;
-        background-color: #004d40;
-        color: white;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        border: 1px solid #b2dfdb;
-        padding: 15px;
-        margin-bottom: 20px;
-        display: block;
-        position: relative;
-        max-height: none;
-        overflow: auto;
-    }
+.event-button.expanded {
+    width: 100%;
+    height: auto;
+    white-space: normal;
+    z-index: 1;
+    background-color: #004d40;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border: 1px solid #b2dfdb;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: block;
+    position: relative;
+    max-height: none;
+    overflow: auto;
+}
 
 .hidden-container {
     display: none;
@@ -320,10 +320,10 @@ button.delete-btn {
         padding: 10px;
     }
 
-        .event-button.expanded {
-            font-size: 16px;
-            padding: 12px;
-        }
+    .event-button.expanded {
+        font-size: 16px;
+        padding: 12px;
+    }
 
     .media-thumb img,
     .media-thumb video {
